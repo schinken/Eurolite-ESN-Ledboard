@@ -170,7 +170,7 @@ common_events.on('irc_alarm', function(val) {
 // Check if host comes back, and set new standbymessage
 
 var hostAvailable = false;
-var hostAvailableCount = 0;
+var hostAvailableCount = 10;
 
 setInterval(function() {
    ping.sys.probe(LEDBOARD_ADDR, function(isAlive) {
