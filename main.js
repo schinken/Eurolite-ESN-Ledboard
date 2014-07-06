@@ -170,8 +170,11 @@ common_events.on('irc_alarm', function(val) {
 // Check if host comes back, and set new standbymessage
 
 var hostAvailable = false;
+var hostAvailabeCount = 0;
+
 setInterval(function() {
    ping.sys.probe(LEDBOARD_ADDR, function(isAlive) {
+
 
      if(isAlive) {
        console.log("Ledboard responds to pings");
@@ -179,17 +182,26 @@ setInterval(function() {
        console.log("Ledboard does not responds to pings");
      }
 
-     if(isAlive && hostAvailable == false) {
+     if(isAlive) {
 
-       console.log("Ledboard is back alive");
-       // Back to live!
-       setTimeout(function() {
-         console.log("Restoring stand by message with last member count, " +lastMemberCount);
-         updateStandByMessage(lastMemberCount);
-       }, 25*1000);
-     }
+       if(hostAvailableCount > 5 && hostAvailable == false) {
+          hostAvailable = true;
 
-     hostAvailable = isAlive;
+          console.log("Ledboard is back alive");
+          // Back to live!
+          setTimeout(function() {
+            console.log("Restoring stand by message with last member count, " +lastMemberCount);
+            updateStandByMessage(lastMemberCount);
+          }, 25*1000);
+
+       }
+
+       hostAvailableCount++;
+    } else {
+      hostAvailable = false;
+      hostAvailableCount = 0;
+    }
+
    });
 
 }, 10*1000);
