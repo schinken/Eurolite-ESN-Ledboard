@@ -153,7 +153,7 @@ status_api.on('member_joined', function(members) {
     lastIndex = index;
   });
 
-  switchBackToStandByMessage((lastIndex+1)*displayDurationSeconds);
+  switchBackToStandByMessageAfter((lastIndex+1)*displayDurationSeconds);
 });
 
 var common_events = new Udpio('COMMON', 5042, '255.255.255.255');
