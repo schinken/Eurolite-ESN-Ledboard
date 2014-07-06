@@ -184,7 +184,7 @@ setInterval(function() {
 
      if(isAlive) {
 
-       if(hostAvailableCount > 5 && hostAvailable == false) {
+       if(hostAvailableCount > 2 && hostAvailable == false) {
           hostAvailable = true;
 
           console.log("Ledboard is back alive");
