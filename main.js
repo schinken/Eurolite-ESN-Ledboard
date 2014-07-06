@@ -27,7 +27,8 @@ function buildPackage(msg, drive, filename) {
 
 
 function alarmMessage(str) {
-      
+   
+  console.log("Sending alarm message: " + str);
   cmd  = ""
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
   cmd += Commands.Pause.SECOND_2 + "04";
@@ -51,6 +52,8 @@ function alarmMessage(str) {
 }
 
 function standByMessage(presentMembers) {
+
+  console.log("Sending stand by message with " + presentMembers + " members present ");
   cmd = ""
 
   cmd += "\x1a1";
@@ -74,6 +77,9 @@ function standByMessage(presentMembers) {
 }
 
 function welcomeMessage(memberName) {
+
+  console.log("Sending welcome message for user " + memberName);
+
   cmd = ""
 
   cmd += "\x1a1";
@@ -107,8 +113,17 @@ function updateStandByMessage(numPresentMembers) {
   sendMessage(standBy);
 }
 
+var lastRestore = null;
 function switchBackToStandByAfter(seconds) {
-  setTimeout(function() {
+
+  if(lastRestore !== null) {
+    console.log("Clearing unprocessed stand by restore");
+    clearInterval(lastRestore);
+    lastRestore = null;
+  }
+
+  console.log("Add delayed stand by store after " + seconds + " seconds");
+  lastRestore = setTimeout(function() {
     updateStandByMessage(lastMemberCount);
   }, seconds*1000);
 }
@@ -116,6 +131,7 @@ function switchBackToStandByAfter(seconds) {
 var status_api = new StatusAPI(STATUS_API, 120);
 
 status_api.on('member_count', function(numPresentMembers) {
+  console.log("Member count changed to " + numPresentMembers);
   lastMemberCount = numPresentMembers;
   updateStandByMessage(numPresentMembers);
 });
@@ -126,6 +142,9 @@ status_api.on('member_joined', function(members) {
   var displayDurationSeconds = 20;
 
   members.forEach(function(member, index) {
+
+    console.log("New member " + member + " joined");
+
     setTimeout(function() {
       welcomeMessage(member, displayDurationSeconds);
     }, displayDurationSeconds*index*1000);
@@ -138,6 +157,9 @@ status_api.on('member_joined', function(members) {
 
 var common_events = new Udpio('COMMON', 5042, '255.255.255.255');
 common_events.on('irc_alarm', function(val) {
+
+  console.log("Incoming alarm message, "+val);
+
   var alarmStr = alarmMessage(val);
   sendMessage(alarmStr);
 
@@ -150,9 +172,18 @@ var hostAvailable = false;
 setInterval(function() {
    ping.sys.probe(LEDBOARD_ADDR, function(isAlive) {
 
+     if(isAlive) {
+       console.log("Ledboard does not responds to pings");
+     } else {
+       console.log("Ledboard responds to pings");
+     }
+
      if(isAlive && hostAvailable == false) {
+
+       console.log("Ledboard is back alive");
        // Back to live!
        setTimeout(function() {
+         console.log("Restoring stand by message with last member count, " +lastMemberCount);
          updateStandByMessage(lastMemberCount);
        }, 10*1000);
      }
