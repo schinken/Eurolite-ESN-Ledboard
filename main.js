@@ -98,8 +98,9 @@ function welcomeMessage(memberName) {
 function sendMessage(body, drive, filename) {
 
   var boardStr = buildPackage(body, drive, filename);
-  console.log(body);
   var message = new Buffer(boardStr);
+
+  console.log(message);
 
   client.send(message, 0, message.length, 9520, LEDBOARD_ADDR, function(err, bytes) {
     console.log(err, bytes);
@@ -173,9 +174,9 @@ setInterval(function() {
    ping.sys.probe(LEDBOARD_ADDR, function(isAlive) {
 
      if(isAlive) {
-       console.log("Ledboard does not responds to pings");
-     } else {
        console.log("Ledboard responds to pings");
+     } else {
+       console.log("Ledboard does not responds to pings");
      }
 
      if(isAlive && hostAvailable == false) {
