@@ -186,7 +186,7 @@ setInterval(function() {
        setTimeout(function() {
          console.log("Restoring stand by message with last member count, " +lastMemberCount);
          updateStandByMessage(lastMemberCount);
-       }, 10*1000);
+       }, 25*1000);
      }
 
      hostAvailable = isAlive;
