@@ -196,7 +196,7 @@ setInterval(function() {
 
        }
 
-       hostAvailableCount++;
+       hostAvailableCount = Math.min(100, hostAvailableCount+1);
     } else {
       hostAvailable = false;
       hostAvailableCount = 0;
