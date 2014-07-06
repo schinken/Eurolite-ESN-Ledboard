@@ -1,0 +1,14 @@
+{
+  "name": "bckspc-ledboard",
+  "version": "0.1.0",
+  "description": "temporary led board utils",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "schinken",
+  "dependencies": {
+    "bckspc-status": "https://github.com/schinken/nodejs-bckspc-status/tarball/master"
+  },
+  "license": "MIT"
+}
