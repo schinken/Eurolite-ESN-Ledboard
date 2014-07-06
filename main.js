@@ -5,6 +5,7 @@ var Commands = require('./Commands');
 var Udpio = require('./Udpio');
 
 var StatusAPI = require('bckspc-status');
+var ping = require('ping');
 
 var STATUS_API = 'http://status.bckspc.de/status.php?response=json';
 var LEDBOARD_ADDR = '10.1.20.23';
@@ -141,5 +142,22 @@ common_events.on('irc_alarm', function(val) {
   sendMessage(alarmStr);
 
   switchBackToStandByMessage(30);
-})
+});
 
+// Check if host comes back, and set new standbymessage
+
+var hostAvailable = false;
+setInterval(function() {
+   ping.sys.probe(LEDBOARD_ADDR, function(isAlive) {
+
+     if(isAlive && hostAvailable == false) {
+       // Back to live!
+       setTimeout(function() {
+         updateStandByMessage(lastMemberCount);
+       }, 10*1000);
+     }
+
+     hostAvailable = isAlive;
+   });
+
+}, 10*1000);
