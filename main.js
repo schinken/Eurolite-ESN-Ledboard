@@ -115,7 +115,7 @@ function updateStandByMessage(numPresentMembers) {
 }
 
 var lastRestore = null;
-function switchBackToStandByAfter(seconds) {
+function switchBackToStandBy(seconds) {
 
   if(lastRestore !== null) {
     console.log("Clearing unprocessed stand by restore");
@@ -153,7 +153,7 @@ status_api.on('member_joined', function(members) {
     lastIndex = index;
   });
 
-  switchBackToStandByMessageAfter((lastIndex+1)*displayDurationSeconds);
+  switchBackToStandBy((lastIndex+1)*displayDurationSeconds);
 });
 
 var common_events = new Udpio('COMMON', 5042, '255.255.255.255');
@@ -164,7 +164,7 @@ common_events.on('irc_alarm', function(val) {
   var alarmStr = alarmMessage(val);
   sendMessage(alarmStr);
 
-  switchBackToStandByMessageAfter(30);
+  switchBackToStandBy(30);
 });
 
 // Check if host comes back, and set new standbymessage
