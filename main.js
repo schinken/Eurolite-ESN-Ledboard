@@ -94,27 +94,43 @@ function welcomeMessage(memberName) {
   return cmd;
 }
 
+function pizzaMessage() {
+
+  console.log("Sending pizza ready message");
+
+  cmd = ""
+
+  cmd += "\x1a4";
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.SCROLL_UP;
+  cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.SCROLL_UP;
+
+  cmd += Commands.Control.FLASH + Commands.Flash.ON;
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YGR_CHARACTER;
+  cmd += "PIZZA IS READY!";
+
+  cmd += Commands.Control.FLASH + Commands.Flash.OFF;
+
+  cmd += Commands.Pause.SECOND_2 + "20";
+
+  return cmd;
+}
+
 
 function sendMessage(body, drive, filename) {
 
   var boardStr = buildPackage(body, drive, filename);
   var message = new Buffer(boardStr);
 
-  console.log(message);
+  console.log("SEND:" ,message);
 
   client.send(message, 0, message.length, 9520, LEDBOARD_ADDR, function(err, bytes) {
-    console.log(err, bytes);
+    console.log("SENT: ", err, bytes);
   });
 }
    
 var lastMemberCount = 0;
-
-function updateStandByMessage(numPresentMembers) {
-  var standBy = standByMessage(numPresentMembers);
-  sendMessage(standBy);
-}
-
 var lastRestore = null;
+
 function switchBackToStandBy(seconds) {
 
   if(lastRestore !== null) {
@@ -125,7 +141,8 @@ function switchBackToStandBy(seconds) {
 
   console.log("Add delayed stand by store after " + seconds + " seconds");
   lastRestore = setTimeout(function() {
-    updateStandByMessage(lastMemberCount);
+    var standBy = standByMessage(lastMemberCount);
+    sendMessage(standBy);
   }, seconds*1000);
 }
 
@@ -134,7 +151,7 @@ var status_api = new StatusAPI(STATUS_API, 120);
 status_api.on('member_count', function(numPresentMembers) {
   console.log("Member count changed to " + numPresentMembers);
   lastMemberCount = numPresentMembers;
-  updateStandByMessage(numPresentMembers);
+  switchBackToStandBy(1);
 });
 
 status_api.on('member_joined', function(members) {
@@ -168,6 +185,15 @@ common_events.on('irc_alarm', function(val) {
   switchBackToStandBy(30);
 });
 
+common_events.on('pizza_timer', function() {
+  console.log("Pizza event received");
+
+  var pizzaStr = pizzaMessage();
+  sendMessage(pizzaStr);
+
+  switchBackToStandBy(22);
+});
+
 // Check if host comes back, and set new standbymessage
 
 var hostAvailable = false;
@@ -188,7 +214,7 @@ setInterval(function() {
        if(hostAvailableCount > 2 && hostAvailable == false) {
           hostAvailable = true;
           console.log("Restoring stand by message with last member count, " +lastMemberCount);
-          updateStandByMessage(lastMemberCount);
+          switchBackToStandBy(1);
        }
 
        hostAvailableCount = Math.min(100, hostAvailableCount+1);
