@@ -164,7 +164,7 @@ common_events.on('irc_alarm', function(val) {
   var alarmStr = alarmMessage(val);
   sendMessage(alarmStr);
 
-  switchBackToStandByMessage(30);
+  switchBackToStandByMessageAfter(30);
 });
 
 // Check if host comes back, and set new standbymessage
