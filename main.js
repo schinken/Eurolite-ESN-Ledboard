@@ -147,7 +147,8 @@ status_api.on('member_joined', function(members) {
     console.log("New member " + member + " joined");
 
     setTimeout(function() {
-      welcomeMessage(member, displayDurationSeconds);
+      var msg = welcomeMessage(member, displayDurationSeconds);
+      sendMessage(msg);
     }, displayDurationSeconds*index*1000);
 
     lastIndex = index;
