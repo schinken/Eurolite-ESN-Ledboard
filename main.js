@@ -186,14 +186,8 @@ setInterval(function() {
 
        if(hostAvailableCount > 2 && hostAvailable == false) {
           hostAvailable = true;
-
-          console.log("Ledboard is back alive");
-          // Back to live!
-          setTimeout(function() {
-            console.log("Restoring stand by message with last member count, " +lastMemberCount);
-            updateStandByMessage(lastMemberCount);
-          }, 25*1000);
-
+          console.log("Restoring stand by message with last member count, " +lastMemberCount);
+          updateStandByMessage(lastMemberCount);
        }
 
        hostAvailableCount = Math.min(100, hostAvailableCount+1);
