@@ -33,7 +33,7 @@ function alarmMessage(str) {
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
   cmd += Commands.Pause.SECOND_2 + "04";
 
-  cmd += "\x1a4";
+  cmd += "\x1a4";                        
   cmd += Commands.Control.FLASH + Commands.Flash.ON;
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
   cmd += "!    ALARM    !"
@@ -76,20 +76,20 @@ function standByMessage(presentMembers) {
   return cmd;
 }
 
-function welcomeMessage(memberName) {
+function doorBellMessage() {
 
-  console.log("Sending welcome message for user " + memberName);
+  console.log("Sending door bell message");
 
-  cmd = ""
+  cmd  = ""
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
+  cmd += Commands.Pause.SECOND_2 + "10";
 
-  cmd += "\x1a1";
-  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.SCROLL_UP;
-  cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.SCROLL_UP;
-
-  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YELLOW;
-  cmd += "Welcome, " + memberName;
-
-  cmd += Commands.Pause.SECOND_2 + "20";
+  cmd += "\x1a4";                        
+  cmd += Commands.Control.FLASH + Commands.Flash.ON;
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
+  cmd += "!    DOORBELL    !"
+  cmd += Commands.Control.FRAME;
+  cmd += Commands.Control.FLASH + Commands.Flash.OFF;
 
   return cmd;
 }
@@ -154,24 +154,12 @@ status_api.on('member_count', function(numPresentMembers) {
   switchBackToStandBy(1);
 });
 
-status_api.on('member_joined', function(members) {
-
-  var lastIndex = 0;
-  var displayDurationSeconds = 20;
-
-  members.forEach(function(member, index) {
-
-    console.log("New member " + member + " joined");
-
-    setTimeout(function() {
-      var msg = welcomeMessage(member, displayDurationSeconds);
-      sendMessage(msg);
-    }, displayDurationSeconds*index*1000);
-
-    lastIndex = index;
-  });
-
-  switchBackToStandBy((lastIndex+1)*displayDurationSeconds);
+var arduino_events = new Udpio('AIO0', 5042, '255.255.255.255');
+arduino_events.on('doorbell', function(val) {
+  if(val == 1) {
+    doorBellMessage();
+    switchBackToStandBy(10);
+  }
 });
 
 var common_events = new Udpio('COMMON', 5042, '255.255.255.255');
