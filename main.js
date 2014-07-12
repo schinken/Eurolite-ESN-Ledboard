@@ -81,15 +81,15 @@ function doorBellMessage() {
   console.log("Sending door bell message");
 
   cmd  = ""
-  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
-  cmd += Commands.Pause.SECOND_2 + "10";
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.SCROLL_UP;
+  cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.SCROLL_UP;
 
   cmd += "\x1a4";                        
   cmd += Commands.Control.FLASH + Commands.Flash.ON;
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
   cmd += "!    DOORBELL    !"
-  cmd += Commands.Control.FRAME;
   cmd += Commands.Control.FLASH + Commands.Flash.OFF;
+  cmd += Commands.Pause.SECOND_2 + "10";
 
   return cmd;
 }
@@ -158,7 +158,9 @@ var arduino_events = new Udpio('AIO0', 5042, '255.255.255.255');
 arduino_events.on('doorbell', function(val) {
   console.log("Doorbell event received: " + val);
   if(val) {
-    doorBellMessage();
+    var message = doorBellMessage();
+    sendMessage(message);
+
     switchBackToStandBy(10);
   }
 });
