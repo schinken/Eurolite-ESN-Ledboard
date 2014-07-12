@@ -35,19 +35,19 @@ function alarmMessage(str) {
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
 
   cmd += "\x1a4";
+  cmd += Commands.Pause.SECOND_2 + "04";
   cmd += Commands.Control.FLASH + Commands.Flash.ON;
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
   cmd += "!    ALARM    !"
   cmd += Commands.Control.FRAME;
-  cmd += Commands.Pause.SECOND_2 + "04";
   cmd += Commands.Control.FLASH + Commands.Flash.OFF;
 
   cmd += "\x1a1";
+  cmd += Commands.Pause.SECOND_2 + "10";
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.GREEN;
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.MOVE_UP;
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
   cmd += str
-  cmd += Commands.Pause.SECOND_2 + "10";
 
   return cmd
 }
@@ -58,6 +58,7 @@ function standByMessage(presentMembers) {
   cmd = ""
 
   cmd += "\x1a1";
+  cmd += Commands.Pause.SECOND_4 + "9999";
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.SCROLL_UP;
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.SCROLL_UP;
 
@@ -72,8 +73,6 @@ function standByMessage(presentMembers) {
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YELLOW;
   cmd += "members " + presentMembers;
 
-  cmd += Commands.Pause.SECOND_4 + "9999";
-
   return cmd;
 }
 
@@ -86,11 +85,11 @@ function doorBellMessage() {
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.SCROLL_UP;
 
   cmd += "\x1a4";                        
+  cmd += Commands.Pause.SECOND_2 + "10";
   cmd += Commands.Control.FLASH + Commands.Flash.ON;
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
   cmd += "!    DOORBELL    !"
   cmd += Commands.Control.FLASH + Commands.Flash.OFF;
-  cmd += Commands.Pause.SECOND_2 + "10";
 
   return cmd;
 }
