@@ -10,6 +10,8 @@ var ping = require('ping');
 var STATUS_API = 'http://status.bckspc.de/status.php?response=json';
 var LEDBOARD_ADDR = '10.1.20.23';
 
+var lastMemberCount = 0;
+
 function buildPackage(msg, drive, filename) {
 
   str  = "";
@@ -44,7 +46,7 @@ function alarmMessage(str) {
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.GREEN;
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.MOVE_UP;
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
-  cmd += Commands.Pause.SECOND_2 + "08";
+  cmd += Commands.Pause.SECOND_2 + "10";
 
   cmd += str
 
@@ -128,30 +130,14 @@ function sendMessage(body, drive, filename) {
   });
 }
    
-var lastMemberCount = 0;
-var lastRestore = null;
-
-function switchBackToStandBy(seconds) {
-
-  if(lastRestore !== null) {
-    console.log("Clearing unprocessed stand by restore");
-    clearInterval(lastRestore);
-    lastRestore = null;
-  }
-
-  console.log("Add delayed stand by store after " + seconds + " seconds");
-  lastRestore = setTimeout(function() {
-    var standBy = standByMessage(lastMemberCount);
-    sendMessage(standBy);
-  }, seconds*1000);
-}
 
 var status_api = new StatusAPI(STATUS_API, 120);
 
 status_api.on('member_count', function(numPresentMembers) {
   console.log("Member count changed to " + numPresentMembers);
   lastMemberCount = numPresentMembers;
-  switchBackToStandBy(1);
+  var message = standByMessage(lastMemberCount);
+  sendMessage(message);
 });
 
 var arduino_events = new Udpio('AIO0', 5042, '255.255.255.255');
@@ -159,9 +145,8 @@ arduino_events.on('doorbell', function(val) {
   console.log("Doorbell event received: " + val);
   if(val) {
     var message = doorBellMessage();
+    message += standByMessage(lastMemberCount);
     sendMessage(message);
-
-    switchBackToStandBy(10);
   }
 });
 
@@ -170,19 +155,17 @@ common_events.on('irc_alarm', function(val) {
 
   console.log("Incoming alarm message, "+val);
 
-  var alarmStr = alarmMessage(val);
-  sendMessage(alarmStr);
-
-  switchBackToStandBy(30);
+  var message = alarmMessage(val);
+  message += standByMessage(lastMemberCount);
+  sendMessage(message);
 });
 
 common_events.on('pizza_timer', function() {
   console.log("Pizza event received");
 
-  var pizzaStr = pizzaMessage();
-  sendMessage(pizzaStr);
-
-  switchBackToStandBy(22);
+  var message = pizzaMessage();
+  message += standByMessage(lastMemberCount);
+  sendMessage(message);
 });
 
 // Check if host comes back, and set new standbymessage
@@ -202,10 +185,11 @@ setInterval(function() {
 
      if(isAlive) {
 
-       if(hostAvailableCount > 2 && hostAvailable == false) {
+       if(hostAvailableCount > 3 && hostAvailable == false) {
           hostAvailable = true;
           console.log("Restoring stand by message with last member count, " +lastMemberCount);
-          switchBackToStandBy(1);
+          var message = standByMessage(lastMemberCount);
+          sendMessage(message);
        }
 
        hostAvailableCount = Math.min(100, hostAvailableCount+1);
