@@ -31,7 +31,6 @@ util.inherits(UDPIO, events.EventEmitter);
 UDPIO.prototype.setup = function() {
     var that = this;
     this.udp_client.on('message', function(msg) {
-       console.log(msg);
 
         var m = msg.toString().match(that.reMessage);
         if(m && (m[1] == 0 || m[1] == that.initId)) {
