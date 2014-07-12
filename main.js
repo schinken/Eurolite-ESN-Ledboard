@@ -111,7 +111,7 @@ function pizzaMessage() {
 
   cmd += Commands.Control.FLASH + Commands.Flash.OFF;
 
-  cmd += Commands.Pause.SECOND_2 + "20";
+  cmd += Commands.Pause.SECOND_2 + "10";
 
   return cmd;
 }
