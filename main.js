@@ -156,7 +156,8 @@ status_api.on('member_count', function(numPresentMembers) {
 
 var arduino_events = new Udpio('AIO0', 5042, '255.255.255.255');
 arduino_events.on('doorbell', function(val) {
-  if(val == 1) {
+  console.log("Doorbell event received: " + val);
+  if(val) {
     doorBellMessage();
     switchBackToStandBy(10);
   }
