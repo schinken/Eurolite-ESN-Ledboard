@@ -33,22 +33,21 @@ function alarmMessage(str) {
   console.log("Sending alarm message: " + str);
   cmd  = ""
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
-  cmd += Commands.Pause.SECOND_2 + "04";
 
-  cmd += "\x1a4";                        
+  cmd += "\x1a4";
   cmd += Commands.Control.FLASH + Commands.Flash.ON;
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
   cmd += "!    ALARM    !"
   cmd += Commands.Control.FRAME;
+  cmd += Commands.Pause.SECOND_2 + "04";
   cmd += Commands.Control.FLASH + Commands.Flash.OFF;
 
   cmd += "\x1a1";
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.GREEN;
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.MOVE_UP;
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
-  cmd += Commands.Pause.SECOND_2 + "10";
-
   cmd += str
+  cmd += Commands.Pause.SECOND_2 + "10";
 
   return cmd
 }
@@ -145,6 +144,7 @@ arduino_events.on('doorbell', function(val) {
   console.log("Doorbell event received: " + val);
   if(val) {
     var message = doorBellMessage();
+    message += Commands.Control.FRAME;
     message += standByMessage(lastMemberCount);
     sendMessage(message);
   }
@@ -156,6 +156,7 @@ common_events.on('irc_alarm', function(val) {
   console.log("Incoming alarm message, "+val);
 
   var message = alarmMessage(val);
+  message += Commands.Control.FRAME;
   message += standByMessage(lastMemberCount);
   sendMessage(message);
 });
@@ -164,6 +165,7 @@ common_events.on('pizza_timer', function() {
   console.log("Pizza event received");
 
   var message = pizzaMessage();
+  message += Commands.Control.FRAME;
   message += standByMessage(lastMemberCount);
   sendMessage(message);
 });
