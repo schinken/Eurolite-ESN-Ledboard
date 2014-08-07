@@ -8,7 +8,10 @@ var StatusAPI = require('bckspc-status');
 var ping = require('ping');
 var mqtt = require('mqtt');
 
-var mqttClient = mqtt.createClient(settings.mqtt.port, settings.mqtt.host);
+var mqttClient = mqtt.connect('mqtt://'+settings.mqtt.host, {
+  reconnectPeriod: 5000
+});
+
 var mqttRouter = require('mqtt-router').wrap(mqttClient);
 
 var lastMemberCount = 0;
