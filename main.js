@@ -8,11 +8,7 @@ var StatusAPI = require('bckspc-status');
 var ping = require('ping');
 var mqtt = require('mqtt');
 
-var mqttClient = mqtt.connect('mqtt://'+settings.mqtt.host, {
-  reconnectPeriod: 5000
-});
-
-var mqttRouter = require('mqtt-router').wrap(mqttClient);
+var mqttClient = mqtt.createClient(settings.mqtt.port, settings.mqtt.host);
 
 var lastMemberCount = 0;
 
@@ -142,33 +138,40 @@ status_api.on('member_count', function(numPresentMembers) {
   sendMessage(message);
 });
 
-mqttRouter.subscribe('sensor/door/bell', function(topic, val) {
-  console.log("Doorbell event received: " + val);
-  if(val) {
-    var message = doorBellMessage();
-    message += Commands.Control.FRAME;
-    message += standByMessage(lastMemberCount);
-    sendMessage(message);
+mqttClient.on('message', function(topic, val) {
+
+  console.log("Received mqtt topic "+ topic +" with value '"+val+"'")
+  switch(topic) {
+
+    case 'psa/pizza':
+
+      var message = pizzaMessage();
+      message += Commands.Control.FRAME;
+      message += standByMessage(lastMemberCount);
+      sendMessage(message);
+
+      break;
+
+    case 'psa/alarm':
+
+      var message = alarmMessage(val);
+      message += Commands.Control.FRAME;
+      message += standByMessage(lastMemberCount);
+      sendMessage(message);
+
+      break;
+
+    case 'sensor/door/bell':
+
+      if(val) {
+        var message = doorBellMessage();
+        message += Commands.Control.FRAME;
+        message += standByMessage(lastMemberCount);
+        sendMessage(message);
+      }
+
+      break;
   }
-});
-
-mqttRouter.subscribe('psa/alarm', function(topic, val) {
-
-  console.log("Incoming alarm message, "+val);
-
-  var message = alarmMessage(val);
-  message += Commands.Control.FRAME;
-  message += standByMessage(lastMemberCount);
-  sendMessage(message);
-});
-
-mqttRouter.subscribe('psa/pizza', function(topic, val) {
-  console.log("Pizza event received");
-
-  var message = pizzaMessage();
-  message += Commands.Control.FRAME;
-  message += standByMessage(lastMemberCount);
-  sendMessage(message);
 });
 
 // Check if host comes back, and set new standbymessage
