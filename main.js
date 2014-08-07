@@ -6,6 +6,7 @@ var settings = require('./settings');
 
 var StatusAPI = require('bckspc-status');
 var ping = require('ping');
+var mqtt = require('mqtt');
 
 var mqttClient = mqtt.createClient(settings.mqtt.host, settings.mqtt.host);
 var mqttRouter = require('mqtt-router').wrap(mqttClient);
