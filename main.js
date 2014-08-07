@@ -139,7 +139,7 @@ status_api.on('member_count', function(numPresentMembers) {
   sendMessage(message);
 });
 
-mqttRouter.subscribe('sensor/door/bell', function(val) {
+mqttRouter.subscribe('sensor/door/bell', function(topic, val) {
   console.log("Doorbell event received: " + val);
   if(val) {
     var message = doorBellMessage();
@@ -149,7 +149,7 @@ mqttRouter.subscribe('sensor/door/bell', function(val) {
   }
 });
 
-mqttRouter.subscribe('psa/alarm', function(val) {
+mqttRouter.subscribe('psa/alarm', function(topic, val) {
 
   console.log("Incoming alarm message, "+val);
 
@@ -159,7 +159,7 @@ mqttRouter.subscribe('psa/alarm', function(val) {
   sendMessage(message);
 });
 
-mqttRouter.subscribe('psa/pizza', function(val) {
+mqttRouter.subscribe('psa/pizza', function(topic, val) {
   console.log("Pizza event received");
 
   var message = pizzaMessage();
