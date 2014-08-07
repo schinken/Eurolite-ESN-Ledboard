@@ -125,7 +125,7 @@ function sendMessage(body, drive, filename) {
 
   console.log("SEND:" ,message);
 
-  client.send(message, 0, message.length, 9520, LEDBOARD_ADDR, function(err, bytes) {
+  client.send(message, 0, message.length, 9520, settings.ledboard.host, function(err, bytes) {
     console.log("SENT: ", err, bytes);
   });
 }
