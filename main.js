@@ -10,6 +10,10 @@ var mqtt = require('mqtt');
 
 var mqttClient = mqtt.createClient(settings.mqtt.port, settings.mqtt.host);
 
+mqttClient.subscribe('psa/alarm');
+mqttClient.subscribe('psa/pizza');
+mqttClient.subscribe('sensor/door/bell');
+
 var lastMemberCount = 0;
 
 function buildPackage(msg, drive, filename) {
