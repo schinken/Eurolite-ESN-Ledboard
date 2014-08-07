@@ -2,13 +2,13 @@ var dgram = require('dgram');
 var client = dgram.createSocket("udp4");
 
 var Commands = require('./Commands');
-var Udpio = require('./Udpio');
+var settings = require('./settings');
 
 var StatusAPI = require('bckspc-status');
 var ping = require('ping');
 
-var STATUS_API = 'http://status.bckspc.de/status.php?response=json';
-var LEDBOARD_ADDR = '10.1.20.23';
+var mqttClient = mqtt.createClient(settings.mqtt.host, settings.mqtt.host);
+var mqttRouter = require('mqtt-router').wrap(mqttClient);
 
 var lastMemberCount = 0;
 
@@ -129,7 +129,7 @@ function sendMessage(body, drive, filename) {
   });
 }
 
-var status_api = new StatusAPI(STATUS_API, 120);
+var status_api = new StatusAPI(settings.status.url, settings.status.interval);
 
 status_api.on('member_count', function(numPresentMembers) {
   console.log("Member count changed to " + numPresentMembers);
@@ -138,8 +138,7 @@ status_api.on('member_count', function(numPresentMembers) {
   sendMessage(message);
 });
 
-var arduino_events = new Udpio('AIO0', 5042, '255.255.255.255');
-arduino_events.on('doorbell', function(val) {
+mqttRouter.subscribe('sensor/door/bell', function(val) {
   console.log("Doorbell event received: " + val);
   if(val) {
     var message = doorBellMessage();
@@ -149,8 +148,7 @@ arduino_events.on('doorbell', function(val) {
   }
 });
 
-var common_events = new Udpio('COMMON', 5042, '255.255.255.255');
-common_events.on('irc_alarm', function(val) {
+mqttRouter.subscribe('psa/alarm', function(val) {
 
   console.log("Incoming alarm message, "+val);
 
@@ -160,7 +158,7 @@ common_events.on('irc_alarm', function(val) {
   sendMessage(message);
 });
 
-common_events.on('pizza_timer', function() {
+mqttRouter.subscribe('psa/pizza', function(val) {
   console.log("Pizza event received");
 
   var message = pizzaMessage();
@@ -175,7 +173,7 @@ var hostAvailable = false;
 var hostAvailableCount = 10;
 
 setInterval(function() {
-   ping.sys.probe(LEDBOARD_ADDR, function(isAlive) {
+   ping.sys.probe(settings.ledboard.host, function(isAlive) {
 
 
      if(isAlive) {
