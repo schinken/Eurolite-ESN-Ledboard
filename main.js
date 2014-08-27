@@ -12,6 +12,7 @@ var mqttClient = mqtt.createClient(settings.mqtt.port, settings.mqtt.host);
 
 mqttClient.subscribe('psa/alarm');
 mqttClient.subscribe('psa/pizza');
+mqttClient.subscribe('psa/newMember');
 mqttClient.subscribe('sensor/door/bell');
 
 var lastMemberCount = 0;
@@ -53,6 +54,30 @@ function alarmMessage(str) {
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
   cmd += str
   cmd += Commands.Pause.SECOND_2 + "10";
+
+  return cmd
+}
+
+function newMemberMessage(nickname) {
+   
+  console.log("Sending new member message: " + nickname);
+  cmd  = ""
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
+                                                               
+  [Commands.FontColor.GREEN, Commands.FontColor.RED, Commands.FontColor.YGR_HORIZONTAL].forEach(function(color) {
+    cmd += "\x1a1";
+    cmd += Commands.Control.FONT_COLOR + color;
+    cmd += "Herzlich Willkommen im backspace!"
+    cmd += Commands.Pause.SECOND_2 + "01";
+    cmd += Commands.Control.FRAME;
+  });
+
+  cmd += "\x1a4";
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YELLOW;
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.MOVE_UP;
+  cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
+  cmd += nickname
+  cmd += Commands.Pause.SECOND_2 + "15";
 
   return cmd
 }
@@ -165,6 +190,15 @@ mqttClient.on('message', function(topic, val) {
 
       break;
 
+    case 'psa/newMember':
+      var message = newMemberMessage(val);
+      message += Commands.Control.FRAME;
+      message += standByMessage(lastMemberCount);
+      sendMessage(message);
+
+      break;
+
+
     case 'sensor/door/bell':
 
       if(val) {
@@ -182,6 +216,7 @@ mqttClient.on('message', function(topic, val) {
 
 var hostAvailable = false;
 var hostAvailableCount = 10;
+
 
 setInterval(function() {
    ping.sys.probe(settings.ledboard.host, function(isAlive) {
@@ -211,3 +246,4 @@ setInterval(function() {
    });
 
 }, 10*1000);
+
