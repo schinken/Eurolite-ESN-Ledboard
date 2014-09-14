@@ -221,13 +221,6 @@ var hostAvailableCount = 10;
 setInterval(function() {
    ping.sys.probe(settings.ledboard.host, function(isAlive) {
 
-
-     if(isAlive) {
-       console.log("Ledboard responds to pings");
-     } else {
-       console.log("Ledboard does not responds to pings");
-     }
-
      if(isAlive) {
 
        if(hostAvailableCount > 3 && hostAvailable == false) {
