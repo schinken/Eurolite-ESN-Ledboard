@@ -13,6 +13,7 @@ var mqttClient = mqtt.createClient(settings.mqtt.port, settings.mqtt.host);
 mqttClient.subscribe('psa/alarm');
 mqttClient.subscribe('psa/pizza');
 mqttClient.subscribe('psa/newMember');
+mqttClient.subscribe('psa/message');
 mqttClient.subscribe('sensor/door/bell');
 
 var lastMemberCount = 0;
