@@ -255,7 +255,7 @@ mqttClient.on('message', function(topic, val) {
 
       if(val) {
         var message = psaMessage(val);
-        message += Commands.Control.Frame;
+        message += Commands.Control.FRAME;
         message += standByMessage(lastMemberCount);
         sendMessage(message);
       }
