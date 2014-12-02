@@ -32,6 +32,16 @@ function buildPackage(msg, drive, filename) {
   return str;
 }
 
+var UMLAUTS = { 'ä': 'ae', 'ü': 'ue', 'ö': 'oe', 'ß': 'sz' };
+
+function convertUmlauts(message) {
+  Object.keys(UMLAUTS).forEach(function(key) {
+    message = message.replace(key, UMLAUTS[key]);
+  });
+
+  return message;
+}
+
 
 function alarmMessage(str) {
    
@@ -52,10 +62,39 @@ function alarmMessage(str) {
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.GREEN;
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.MOVE_UP;
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
-  cmd += str
+  cmd += convertUmlauts(str);
   cmd += Commands.Pause.SECOND_2 + "10";
 
   return cmd
+}
+
+function psaMessage(message) {
+  console.log("Reciving PSA message " + message);
+
+  cmd = "";
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.RADAR_SCAN;
+  cmd += Commands.Control.FLASH + Commands.Flash.ON;
+
+  cmd += "\x1a1";
+
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YELLOW;
+  cmd += "PUBLIC ";
+
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.RED;
+  cmd += "SERVICE ";
+
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.GREEN;
+  cmd += "ANNOUNCEMENT";
+
+  cmd += Commands.Control.FLASH + Commands.Flash.OFF;
+
+  cmd += Commands.Pause.SECOND_2 + "05";
+  cmd += Commands.Control.FRAME;
+
+  cmd += convertUmlauts(message);
+  cmd += Commands.Pause.SECOND_2 + "30";
+
+  return cmd;
 }
 
 function newMemberMessage(nickname) {
@@ -76,7 +115,7 @@ function newMemberMessage(nickname) {
   cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YELLOW;
   cmd += Commands.Control.PATTERN_IN + Commands.Pattern.MOVE_UP;
   cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.MOVE_LEFT;
-  cmd += nickname
+  cmd += nickname;
   cmd += Commands.Pause.SECOND_2 + "15";
 
   return cmd
@@ -161,6 +200,7 @@ function sendMessage(body, drive, filename) {
 var status_api = new StatusAPI(settings.status.url, settings.status.interval);
 
 status_api.on('member_count', function(numPresentMembers) {
+
   console.log("Member count changed to " + numPresentMembers);
   lastMemberCount = numPresentMembers;
   var message = standByMessage(lastMemberCount);
@@ -209,6 +249,17 @@ mqttClient.on('message', function(topic, val) {
       }
 
       break;
+
+    case 'psa/message':
+
+      if(val) {
+        var message = psaMessage("Küche aufräumen");
+        message += Commands.Control.Frame;
+        message += standByMessage(lastMemberCount);
+        sendMessage(message);
+      }
+
+      break;
   }
 });
 
@@ -217,8 +268,8 @@ mqttClient.on('message', function(topic, val) {
 var hostAvailable = false;
 var hostAvailableCount = 10;
 
-
 setInterval(function() {
+
    ping.sys.probe(settings.ledboard.host, function(isAlive) {
 
      if(isAlive) {
