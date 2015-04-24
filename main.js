@@ -11,6 +11,7 @@ var mqtt = require('mqtt');
 var mqttClient = mqtt.createClient(settings.mqtt.port, settings.mqtt.host);
 
 mqttClient.subscribe('psa/alarm');
+mqttClient.subscribe('psa/donation');
 mqttClient.subscribe('psa/pizza');
 mqttClient.subscribe('psa/newMember');
 mqttClient.subscribe('psa/message');
@@ -185,6 +186,28 @@ function pizzaMessage() {
   return cmd;
 }
 
+function donationMessage() {
+
+  console.log("Sending donation message");
+
+  cmd = ""
+
+  cmd += "\x1a4";
+  cmd += Commands.Control.PATTERN_IN + Commands.Pattern.SCROLL_UP;
+  cmd += Commands.Control.PATTERN_OUT + Commands.Pattern.SCROLL_UP;
+
+  cmd += Commands.Control.FLASH + Commands.Flash.ON;
+  cmd += Commands.Control.FONT_COLOR + Commands.FontColor.YGR_CHARACTER;
+  cmd += "\\o/ Spende! \\o/";
+
+  cmd += Commands.Control.FLASH + Commands.Flash.OFF;
+
+  cmd += Commands.Pause.SECOND_2 + "04";
+
+  return cmd;
+}
+
+
 
 function sendMessage(body, drive, filename) {
 
@@ -216,6 +239,15 @@ mqttClient.on('message', function(topic, val) {
     case 'psa/pizza':
 
       var message = pizzaMessage();
+      message += Commands.Control.FRAME;
+      message += standByMessage(lastMemberCount);
+      sendMessage(message);
+
+      break;
+
+    case 'psa/donation':
+
+      var message = donationMessage();
       message += Commands.Control.FRAME;
       message += standByMessage(lastMemberCount);
       sendMessage(message);
