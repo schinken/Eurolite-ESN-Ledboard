@@ -10,8 +10,7 @@ module.exports = {
   },
 
   mqtt: {
-    host: 'mqtt',
-    port: 1883
+    host: 'mqtt.core.bckspc.de'
   }
 
 };

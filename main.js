@@ -7,7 +7,7 @@ var PingProbe = require('./lib/Utils/PingProbe');
 var screens = require('./lib/Screens');
 
 var mqtt = require('mqtt');
-var mqttClient = mqtt.createClient(configuration.mqtt.port, configuration.mqtt.host);
+var mqttClient = mqtt.connect('mqtt://' + configuration.mqtt.host);
 
 mqttClient.subscribe('psa/alarm');
 mqttClient.subscribe('psa/donation');
