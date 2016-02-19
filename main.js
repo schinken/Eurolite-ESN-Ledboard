@@ -1,12 +1,11 @@
-var configuration = require('./lib/configuration');
-
 var StatusAPI = require('bckspc-status');
+var mqtt = require('mqtt');
 
 var LedBoardClient = require('./lib/LedBoard/Client');
+var configuration = require('./lib/configuration');
 var PingProbe = require('./lib/Utils/PingProbe');
 var screens = require('./lib/Screens');
 
-var mqtt = require('mqtt');
 var mqttClient = mqtt.connect('mqtt://' + configuration.mqtt.host);
 
 mqttClient.subscribe('psa/alarm');
@@ -46,7 +45,6 @@ mqttClient.on('message', function (topic, payload) {
         case 'psa/newMember':
             ledBoard.sendScreens([screens.newMemberRegistration(payload), screens.idle(memberCount)]);
             break;
-
 
         case 'sensor/door/bell':
             if (payload) {
