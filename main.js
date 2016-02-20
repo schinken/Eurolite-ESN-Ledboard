@@ -52,7 +52,7 @@ mqttClient.on('message', function (topic, payload) {
             break;
 
         case 'sensor/door/bell':
-            if (payload) {
+            if (payload == 'pressed') {
                 ledBoard.sendScreens([screens.doorBell(), screens.idle(memberCount)]);
             }
             break;
