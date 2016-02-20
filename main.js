@@ -1,6 +1,11 @@
 var StatusAPI = require('bckspc-status');
 var mqtt = require('mqtt');
 
+var argv = require('yargs')
+    .usage('Usage: $0 --hostname [hostname]')
+    .demand(['hostname'])
+    .argv;
+
 var LedBoardClient = require('./lib/LedBoard/Client');
 var configuration = require('./lib/configuration');
 var PingProbe = require('./lib/Utils/PingProbe');
@@ -15,7 +20,7 @@ mqttClient.subscribe('psa/newMember');
 mqttClient.subscribe('psa/message');
 mqttClient.subscribe('sensor/door/bell');
 
-var ledBoard = new LedBoardClient(configuration.ledboard.host);
+var ledBoard = new LedBoardClient(argv.hostname);
 
 var statusApi = new StatusAPI(configuration.status.url, configuration.status.interval);
 var memberCount = 0;
@@ -60,7 +65,7 @@ mqttClient.on('message', function (topic, payload) {
     }
 });
 
-var aliveProbe = new PingProbe(configuration.ledboard.host);
+var aliveProbe = new PingProbe(argv.hostname);
 aliveProbe.on('alive', function () {
     ledBoard.sendScreen(screens.idle(memberCount));
 });
