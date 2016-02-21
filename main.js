@@ -32,7 +32,9 @@ statusApi.on('member_count', function (currentMemberCount) {
 
 mqttClient.on('message', function (topic, payload) {
 
-    console.log("Received mqtt topic " + topic + " with value '" + payload + "'");
+    var message = '' + payload;
+
+    console.log("Received mqtt topic " + topic + " with value '" + message + "'");
     switch (topic) {
 
         case 'psa/pizza':
@@ -44,7 +46,7 @@ mqttClient.on('message', function (topic, payload) {
             break;
 
         case 'psa/alarm':
-            ledBoard.sendScreens([screens.alarm(payload), screens.idle(memberCount)]);
+            ledBoard.sendScreens([screens.alarm(message), screens.idle(memberCount)]);
             break;
 
         case 'psa/newMember':
@@ -59,7 +61,7 @@ mqttClient.on('message', function (topic, payload) {
 
         case 'psa/message':
             if (payload) {
-                ledBoard.sendScreens([screens.publicServiceAnnouncement(payload), screens.idle(memberCount)]);
+                ledBoard.sendScreens([screens.publicServiceAnnouncement(message), screens.idle(memberCount)]);
             }
             break;
     }
