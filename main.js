@@ -54,13 +54,13 @@ mqttClient.on('message', function (topic, payload) {
             break;
 
         case 'sensor/door/bell':
-            if (payload == 'pressed') {
+            if (message == 'pressed') {
                 ledBoard.sendScreens([screens.doorBell(), screens.idle(memberCount)]);
             }
             break;
 
         case 'psa/message':
-            if (payload) {
+            if (message) {
                 ledBoard.sendScreens([screens.publicServiceAnnouncement(message), screens.idle(memberCount)]);
             }
             break;
