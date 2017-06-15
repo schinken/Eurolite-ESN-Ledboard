@@ -10,9 +10,9 @@
   "dependencies": {
     "bckspc-status": "https://github.com/schinken/nodejs-bckspc-status/tarball/master",
     "configurations": "^1.1.0",
-    "mqtt": "^2.0.1",
-    "ms": "^0.7.1",
-    "ping": "^0.1.10",
+    "mqtt": "^2.8.2",
+    "ms": "^2.0.0",
+    "ping": "^0.2.2",
     "yargs": "^4.1.0"
   },
   "license": "MIT"
