@@ -1,17 +1,17 @@
-var StatusAPI = require('bckspc-status');
-var mqtt = require('mqtt');
+const StatusAPI = require('bckspc-status');
+const mqtt = require('mqtt');
 
-var argv = require('yargs')
+const argv = require('yargs')
     .usage('Usage: $0 --hostname [hostname]')
     .demand(['hostname'])
     .argv;
 
-var LedBoardClient = require('./lib/LedBoard/Client');
-var configuration = require('./lib/configuration');
-var PingProbe = require('./lib/Utils/PingProbe');
-var screens = require('./lib/Screens');
+const LedBoardClient = require('./lib/LedBoard/Client');
+const configuration = require('./lib/configuration');
+const PingProbe = require('./lib/Utils/PingProbe');
+const screens = require('./lib/Screens');
 
-var mqttClient = mqtt.connect('mqtt://' + configuration.mqtt.host);
+const mqttClient = mqtt.connect('mqtt://' + configuration.mqtt.host);
 
 mqttClient.subscribe('psa/alarm');
 mqttClient.subscribe('psa/donation');
@@ -20,19 +20,19 @@ mqttClient.subscribe('psa/newMember');
 mqttClient.subscribe('psa/message');
 mqttClient.subscribe('sensor/door/bell');
 
-var ledBoard = new LedBoardClient(argv.hostname);
+const ledBoard = new LedBoardClient(argv.hostname);
 
-var statusApi = new StatusAPI(configuration.status.url, configuration.status.interval);
-var memberCount = 0;
+const statusApi = new StatusAPI(configuration.status.url, configuration.status.interval);
+let memberCount = 0;
 
-statusApi.on('member_count', function (currentMemberCount) {
+statusApi.on('member_count', (currentMemberCount) => {
     memberCount = currentMemberCount;
     ledBoard.sendScreen(screens.idle(currentMemberCount));
 });
 
 mqttClient.on('message', function (topic, payload) {
 
-    var message = '' + payload;
+    const message = '' + payload;
 
     console.log("Received mqtt topic " + topic + " with value '" + message + "'");
     switch (topic) {
@@ -67,8 +67,8 @@ mqttClient.on('message', function (topic, payload) {
     }
 });
 
-var aliveProbe = new PingProbe(argv.hostname);
-aliveProbe.on('alive', function () {
+const aliveProbe = new PingProbe(argv.hostname);
+aliveProbe.on('alive', () => {
     ledBoard.sendScreen(screens.idle(memberCount));
 });
 
