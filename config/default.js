@@ -2,6 +2,8 @@
 
 module.exports = {
 
+    mode: 'default',
+
     status: {
         url: 'http://status.bckspc.de/status.php?response=json',
         interval: 120
