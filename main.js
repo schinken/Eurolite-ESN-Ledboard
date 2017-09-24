@@ -1,3 +1,5 @@
+'use strict';
+
 const StatusAPI = require('bckspc-status');
 const mqtt = require('mqtt');
 
