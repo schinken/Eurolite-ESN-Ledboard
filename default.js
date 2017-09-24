@@ -6,7 +6,7 @@ const LedBoardClient = require('./lib/LedBoard/Client');
 const PingProbe = require('./lib/Utils/PingProbe');
 const screens = require('./lib/Screens');
 
-module.exports.run = (hostname, config) => {
+module.exports.run = (config) => {
     const mqttClient = mqtt.connect('mqtt://' + config.mqtt.host);
 
     mqttClient.subscribe('psa/alarm');
