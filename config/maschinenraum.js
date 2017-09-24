@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-    mode: 'lasercutter'
+    mode: 'lasercutter',
+    host: 'ledboard.maschinenraum.core.bckspc.de'
 };

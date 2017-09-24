@@ -2,8 +2,8 @@
 
 const configuration = require('./lib/configuration');
 const argv = require('yargs')
-    .usage('Usage: $0 --hostname hostname --config config')
-    .demand(['hostname', 'config'])
+    .usage('Usage: $0 --config config')
+    .demand(['config'])
     .argv;
 
 const config = configuration.get(argv.config);
@@ -17,4 +17,4 @@ if (config.mode == 'default') {
     process.exit(1);
 }
 
-runtime.run(argv.hostname, config);
+runtime.run(config);

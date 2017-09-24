@@ -16,7 +16,7 @@ module.exports.run = (hostname, config) => {
     mqttClient.subscribe('psa/message');
     mqttClient.subscribe('sensor/door/bell');
 
-    const ledBoard = new LedBoardClient(hostname);
+    const ledBoard = new LedBoardClient(config.host);
 
     const statusApi = new StatusAPI(config.status.url, config.status.interval);
     let memberCount = 0;
@@ -63,7 +63,7 @@ module.exports.run = (hostname, config) => {
         }
     });
 
-    const aliveProbe = new PingProbe(hostname);
+    const aliveProbe = new PingProbe(config.host);
     aliveProbe.on('alive', () => {
         ledBoard.sendScreen(screens.idle(memberCount));
     });

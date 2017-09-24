@@ -1,3 +1,5 @@
 'use strict';
 
-module.exports = {};
+module.exports = {
+    host: 'ledboard.lounge.core.bckspc.de'
+};

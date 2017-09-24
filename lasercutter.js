@@ -6,7 +6,7 @@ const LedBoardClient = require('./lib/LedBoard/Client');
 const PingProbe = require('./lib/Utils/PingProbe');
 const screens = require('./lib/Screens');
 
-module.exports.run = (hostname, config) => {
+module.exports.run = (config) => {
 
     let memberCount = 0;
 
@@ -16,7 +16,7 @@ module.exports.run = (hostname, config) => {
 
     const statusApi = new StatusAPI(config.status.url, config.status.interval);
     const mqttClient = mqtt.connect('mqtt://' + config.mqtt.host);
-    const ledBoard = new LedBoardClient(hostname);
+    const ledBoard = new LedBoardClient(config.host);
 
 
     mqttClient.subscribe('project/laser/operation');
