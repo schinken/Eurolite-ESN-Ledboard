@@ -33,7 +33,7 @@ module.exports.run = (config) => {
     });
 
 
-    mqttClient.on('message', function (topic, payload) {
+    mqttClient.on('message', (topic, payload) => {
 
         const message = '' + payload;
 
@@ -41,7 +41,7 @@ module.exports.run = (config) => {
         switch (topic) {
 
             case 'project/laser/operation':
-                if (message == 'active') {
+                if (message === 'active') {
                     idleScreen = laserActiveIdleScreen;
 
                     // Use the internal datetime to produce a counting screen!
@@ -74,7 +74,7 @@ module.exports.run = (config) => {
                 break;
 
             case 'sensor/door/bell':
-                if (message == 'pressed') {
+                if (message === 'pressed') {
                     ledBoard.sendScreens([screens.doorBell(), idleScreen()]);
                 }
                 break;

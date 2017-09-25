@@ -9,9 +9,9 @@ const argv = require('yargs')
 const config = configuration.get(argv.config);
 
 let runtime = null;
-if (config.mode == 'default') {
+if (config.mode === 'default') {
     runtime = require('./default');
-} else if (config.mode == 'lasercutter') {
+} else if (config.mode === 'lasercutter') {
     runtime = require('./lasercutter');
 } else {
     process.exit(1);

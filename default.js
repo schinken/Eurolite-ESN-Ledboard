@@ -26,7 +26,7 @@ module.exports.run = (config) => {
         ledBoard.sendScreen(screens.idle(currentMemberCount));
     });
 
-    mqttClient.on('message', function (topic, payload) {
+    mqttClient.on('message', (topic, payload) => {
 
         const message = '' + payload;
 
@@ -50,7 +50,7 @@ module.exports.run = (config) => {
                 break;
 
             case 'sensor/door/bell':
-                if (message == 'pressed') {
+                if (message === 'pressed') {
                     ledBoard.sendScreens([screens.doorBell(), screens.idle(memberCount)]);
                 }
                 break;
