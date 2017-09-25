@@ -57,7 +57,8 @@ module.exports.run = (config) => {
 
             case 'project/laser/finished':
                 if (message) {
-                    ledBoard.sendScreens([screens.laserFinished(message), defaultIdleScreen()]);
+                    const duration = parseInt(message, 10);
+                    ledBoard.sendScreens([screens.laserFinished(duration), defaultIdleScreen()]);
 
                     // Reset datetime to something useful
                     ledBoard.setDate(new Date());
