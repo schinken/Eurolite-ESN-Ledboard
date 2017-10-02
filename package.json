@@ -1,6 +1,6 @@
 {
   "name": "bckspc-ledboard",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "LED Board utils",
   "main": "main.js",
   "scripts": {
