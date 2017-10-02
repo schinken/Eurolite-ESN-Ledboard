@@ -24,6 +24,7 @@ module.exports.run = (config) => {
 
     mqttClient.subscribe('project/laser/operation');
     mqttClient.subscribe('project/laser/finished');
+    mqttClient.subscribe('project/laser/duration');
 
     mqttClient.subscribe('psa/alarm');
     mqttClient.subscribe('psa/pizza');
@@ -54,6 +55,20 @@ module.exports.run = (config) => {
                     ledBoard.sendScreen(screens.laserOperation());
                 } else {
                     idleScreen = defaultIdleScreen;
+                }
+
+                break;
+
+            // We need to correct the time of the LED Board every two minutes or so, because otherwise
+            // it get's a bit off
+            case 'project/laser/duration':
+                const duration = parseInt(message, 10);
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+
+                if (minutes % 2 === 0 && seconds == 58) {
+                    const correction = new Date(2000, 1, 0, 0, minutes, 0, 0);
+                    ledBoard.setDate(correction);
                 }
 
                 break;
