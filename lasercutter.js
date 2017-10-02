@@ -63,11 +63,12 @@ module.exports.run = (config) => {
             // it get's a bit off
             case 'project/laser/duration':
                 const duration = parseInt(message, 10);
+                const hours = Math.floor(duration / 3600);
                 const minutes = Math.floor(duration / 60);
                 const seconds = duration % 60;
 
                 if (minutes % 2 === 0 && seconds == 58) {
-                    const correction = new Date(2000, 1, 0, 0, minutes, 0, 0);
+                    const correction = new Date(2000, 1, 0, hours, minutes, 0, 0);
                     ledBoard.setDate(correction);
                 }
 
