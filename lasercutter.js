@@ -48,7 +48,7 @@ module.exports.run = (config) => {
                     idleScreen = laserActiveIdleScreen;
 
                     // Use the internal datetime to produce a counting screen!
-                    const nullDate = new Date(2000, 1, 0, 0, 0, 0, 0);
+                    const nullDate = new Date(2000, 1, 0, 0, 0, 1, 0);
                     ledBoard.setDate(nullDate);
 
                     ledBoard.sendScreen(screens.laserOperation());
