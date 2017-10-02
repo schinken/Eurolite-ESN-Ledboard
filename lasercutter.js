@@ -67,8 +67,8 @@ module.exports.run = (config) => {
                 const minutes = Math.floor(duration / 60);
                 const seconds = duration % 60;
 
-                if (minutes % 2 === 0 && seconds == 58) {
-                    const correction = new Date(2000, 1, 0, hours, minutes, 0, 0);
+                if (minutes % 2 === 0 && seconds == 59) {
+                    const correction = new Date(2000, 1, 0, hours, minutes + 1, 0, 0);
                     ledBoard.setDate(correction);
                 }
 
