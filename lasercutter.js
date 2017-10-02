@@ -18,6 +18,9 @@ module.exports.run = (config) => {
     const mqttClient = mqtt.connect('mqtt://' + config.mqtt.host);
     const ledBoard = new LedBoardClient(config.host);
 
+    // Set time initially
+    ledBoard.setDate(new Date());
+
 
     mqttClient.subscribe('project/laser/operation');
     mqttClient.subscribe('project/laser/finished');
@@ -87,7 +90,7 @@ module.exports.run = (config) => {
         }
     });
 
-    const aliveProbe = new PingProbe(config.host);
+    const aliveProbe = new PingProbe(config.host, config.ping);
     aliveProbe.on('alive', () => {
         ledBoard.sendScreen(screens.idle(memberCount));
     });

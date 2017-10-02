@@ -63,7 +63,7 @@ module.exports.run = (config) => {
         }
     });
 
-    const aliveProbe = new PingProbe(config.host);
+    const aliveProbe = new PingProbe(config.host, config.ping);
     aliveProbe.on('alive', () => {
         ledBoard.sendScreen(screens.idle(memberCount));
     });
