@@ -1,6 +1,5 @@
 'use strict';
 
-const StatusAPI = require('bckspc-status');
 const mqtt = require('mqtt');
 const LedBoardClient = require('./lib/LedBoard/Client');
 const PingProbe = require('./lib/Utils/PingProbe');
@@ -14,13 +13,11 @@ module.exports.run = (config) => {
     const laserActiveIdleScreen = _ => screens.laserOperation();
     let idleScreen = defaultIdleScreen;
 
-    const statusApi = new StatusAPI(config.status.url, config.status.interval);
     const mqttClient = mqtt.connect('mqtt://' + config.mqtt.host);
     const ledBoard = new LedBoardClient(config.host);
 
     // Set time initially
     ledBoard.setDate(new Date());
-
 
     mqttClient.subscribe('project/laser/operation');
     mqttClient.subscribe('project/laser/finished');
@@ -30,12 +27,7 @@ module.exports.run = (config) => {
     mqttClient.subscribe('psa/pizza');
     mqttClient.subscribe('psa/message');
     mqttClient.subscribe('sensor/door/bell');
-
-    statusApi.on('member_count', (currentMemberCount) => {
-        memberCount = currentMemberCount;
-        ledBoard.sendScreen(idleScreen());
-    });
-
+    mqttClient.subscribe('sensor/space/member/present');
 
     mqttClient.on('message', (topic, payload) => {
 
@@ -43,6 +35,11 @@ module.exports.run = (config) => {
 
         console.log("Received mqtt topic " + topic + " with value '" + message + "'");
         switch (topic) {
+
+            case 'sensor/space/member/present':
+                memberCount = parseInt(message, 10);
+                ledBoard.sendScreen(screens.idle(memberCount));
+                break;
 
             case 'project/laser/operation':
                 if (message === 'active') {
