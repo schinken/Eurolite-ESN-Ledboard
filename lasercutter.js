@@ -8,6 +8,7 @@ const screens = require('./lib/Screens');
 module.exports.run = (config) => {
 
     let memberCount = 0;
+    let laserActive = false;
 
     const defaultIdleScreen = _ => screens.idle(memberCount);
     const laserActiveIdleScreen = _ => screens.laserOperation();
@@ -38,11 +39,16 @@ module.exports.run = (config) => {
 
             case 'sensor/space/member/present':
                 memberCount = parseInt(message, 10);
-                ledBoard.sendScreen(screens.idle(memberCount));
+
+                if (!laserActive) {
+                    ledBoard.sendScreen(screens.idle(memberCount));
+                }
+
                 break;
 
             case 'project/laser/operation':
                 if (message === 'active') {
+                    laserActive = true;
                     idleScreen = laserActiveIdleScreen;
 
                     // Use the internal datetime to produce a counting screen!
@@ -51,6 +57,7 @@ module.exports.run = (config) => {
 
                     ledBoard.sendScreen(screens.laserOperation());
                 } else {
+                    laserActive = false;
                     idleScreen = defaultIdleScreen;
                 }
 
@@ -64,7 +71,7 @@ module.exports.run = (config) => {
                 const minutes = Math.floor(duration / 60);
                 const seconds = duration % 60;
 
-                if (minutes % 2 === 0 && seconds == 57) {
+                if (minutes % 2 === 0 && seconds === 57) {
                     const correction = new Date(2000, 1, 0, hours, minutes + 1, 0, 0);
                     ledBoard.setDate(correction);
                 }
