@@ -1,4 +1,4 @@
-# backspace ledboard client
+# Eurolite Ledboard Client
 
 This is the ledboard client used at hackerspace-bamberg.de for the EUROLITE ESN 16x256 5mm LED RGY LED Board.
 
